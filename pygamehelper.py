@@ -10,11 +10,11 @@ class OBJECTS(Enum): #enum
 #Remember that calling to screen will not allow autocomplete
 
 class Object:  #base object class, used only for inheritance.
-    def __init__(self,screen,pos,col=pygame.Color(22,252,187,255),rendered = True,render_priority = 100,group=[]):
+    def __init__(self,window,pos,col=pygame.Color(22,252,187,255),rendered = True,render_priority = 100,group=[]):
         self.pos = pos
         self.col = col
         self.rendered = rendered
-        self.UID = screen.get_id()
+        self.UID = window.get_id()
         self.render_priority = render_priority
         self.group = []
     def render_prep(self,window_obj): # a function that allows for more complex objects to render multiple simpler objects instead of one complex
@@ -27,27 +27,40 @@ class Object:  #base object class, used only for inheritance.
 
 
 class Base_rectangle(Object):  # a simple rectangle
-    def __init__(self, screen, pos,size,col=pygame.Color(22, 252, 187, 255), rendered=True, render_priority=100,group=[]):
-        super().__init__(screen, pos, col, rendered, render_priority,group)
+    def __init__(self, window, pos,size,col=pygame.Color(22, 252, 187, 255), rendered=True, render_priority=100,group=[]):
+        super().__init__(window, pos, col, rendered, render_priority,group)
         self.size = size
-
-    def render(self,window_obj):
-        window_obj.draw_rect(self.pos,self.size,self.col)
+    def render_prep(self):
+        return None
+    def render(self):
+        self.window.draw_rect(self.pos,self.size,self.col)
 
 
 
 
 
 class Base_circle(Object): # a simple circle
-    def __init__(self, screen, pos,rad, col=pygame.Color(22, 252, 187, 255), rendered=True, render_priority=100,group=[]):
-        super().__init__(screen, pos, col, rendered, render_priority,group)
+    def __init__(self, window, pos,rad, col=pygame.Color(22, 252, 187, 255), rendered=True, render_priority=100,group=[]):
+        super().__init__(window, pos, col, rendered, render_priority,group)
         self.radius = rad
-    def render(self,window_obj):
-        window_obj.draw_circle(self.pos,self.radius,self.col)
+    def render_prep(self):
+        return None
+    def render(self):
+        self.window.draw_circle(self.pos,self.radius,self.col)
 
 
+class Image(Object):
+    def __init__(self,window,pos,image_path,scale,rendered = True,render_priority = 100,group=[])
+        super().__init__(window,pos,Color(255,255,255,255),rendered,render_priority,group)
+        self.image_surf = pygame.image.load(image_path).convert()
+        image_size = (image_surf.get_width(),image_surf.get_height())
+        self.image_surf = pygame.transform.scale(self.image_surf,(image_size[0]*scale[0],image_size[1]*scale[1]))
 
-
+    def render_prep(self):
+        return None
+    
+    def render(self):
+        self.window.draw_image(self.pos,self.image_surf)
 
 
 
@@ -111,7 +124,9 @@ class GameWindow: #main window class
     def draw_circle(self,pos:tuple,rad:int,col=pygame.Color(255,255,255,255)): # draws simple circle that frame
         pygame.draw.circle(self.screen,col,pos,rad)
 
-
+    def draw_image(self,pos:tuple,image_surf):
+        self.screen.blit(image_surf,pos)
+        
 
 
 
@@ -122,9 +137,6 @@ class GameWindow: #main window class
 
 
 window = GameWindow((600,600),"hello")
-
-
-
 
 while window.running:
     window.process()

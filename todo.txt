@@ -1,0 +1,6 @@
+- image functionality
+    - image sheet functionality
+    - surface on to surface blit-ing 
+- collision
+- sprite
+    - combines image and collision
