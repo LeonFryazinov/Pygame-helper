@@ -14,12 +14,13 @@ class Object:  #base object class, used only for inheritance.
         self.pos = pos
         self.col = col
         self.rendered = rendered
+        self.window = window
         self.UID = window.get_id()
         self.render_priority = render_priority
         self.group = []
-    def render_prep(self,window_obj): # a function that allows for more complex objects to render multiple simpler objects instead of one complex
+    def render_prep(self): # a function that allows for more complex objects to render multiple simpler objects instead of one complex
         pass
-    def render(self,window_obj): # does the "draw" function dependent on object type, overwritten in inherited classes
+    def render(self): # does the "draw" function dependent on object type, overwritten in inherited classes
         pass
 
 
@@ -33,7 +34,7 @@ class Base_rectangle(Object):  # a simple rectangle
     def render_prep(self):
         return None
     def render(self):
-        self.window.draw_rect(self.pos,self.size,self.col)
+        self.window.draw_rectangle()
 
 
 
@@ -50,10 +51,10 @@ class Base_circle(Object): # a simple circle
 
 
 class Image(Object):
-    def __init__(self,window,pos,image_path,scale,rendered = True,render_priority = 100,group=[])
-        super().__init__(window,pos,Color(255,255,255,255),rendered,render_priority,group)
+    def __init__(self,window,pos,image_path,scale,rendered = True,render_priority = 100,group=[]):
+        super().__init__(window,pos,pygame.Color(255,255,255,255),rendered,render_priority,group)
         self.image_surf = pygame.image.load(image_path).convert()
-        image_size = (image_surf.get_width(),image_surf.get_height())
+        image_size = (self.image_surf.get_width(),self.image_surf.get_height())
         self.image_surf = pygame.transform.scale(self.image_surf,(image_size[0]*scale[0],image_size[1]*scale[1]))
 
     def render_prep(self):
